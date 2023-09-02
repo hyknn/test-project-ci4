@@ -32,7 +32,8 @@
     <script src="https://kit.fontawesome.com/42d5adcbca.js" crossorigin="anonymous"></script>
     <link href="<?= base_url('assets/css/nucleo-svg.css'); ?>" rel="stylesheet" />
     <!-- CSS Files -->
-    <link id="pagestyle" href="<?= base_url('assets/css/argon-dashboard.css?v=2.0.4'); ?>" rel="stylesheet" />
+    <link id="pagestyle" href="<?= base_url('assets/css/argon-dashboard.min.css?v=2.0.5'); ?>" rel="stylesheet" />
+    <?= $this->renderSection('pageStyles') ?>
 </head>
 
 <body class="g-sidenav-show   bg-gray-100">
@@ -117,6 +118,7 @@
     <script src="<?= base_url('assets/js/core/bootstrap.min.js'); ?>"></script>
     <script src="<?= base_url('assets/js/plugins/perfect-scrollbar.min.js'); ?>"></script>
     <script src="<?= base_url('assets/js/plugins/smooth-scrollbar.min.js'); ?>"></script>
+    <script src="<?= base_url('assets/js/plugins/datatables.js'); ?>"></script>
     <script src="<?= base_url('assets/js/plugins/chartjs.min.js'); ?>"></script>
     <script>
         var ctx1 = document.getElementById("chart-line").getContext("2d");
@@ -214,6 +216,7 @@
     <script async defer src="https://buttons.github.io/buttons.js"></script>
     <!-- Control Center for Soft Dashboard: parallax effects, scripts for the example pages etc -->
     <script src="<?= base_url('assets/js/argon-dashboard.min.js?v=2.0.4'); ?>"></script>
+    <?= $this->renderSection('pageScript') ?>
 </body>
 
 </html>

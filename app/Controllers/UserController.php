@@ -3,17 +3,17 @@
 namespace App\Controllers;
 
 use App\Controllers\BaseController;
-use App\Models\UserData;
 use App\Models\UserModel;
+use CodeIgniter\Shield\Entities\User;
 
-class EmployeesController extends BaseController
+class UserController extends BaseController
 {
     public function index()
     {
         $model = new UserModel();
-        // $data['users'] = $model->findAll();
-        $data['users'] = $model->getEmployeeData()->getResult();
-        return view('pages/employees/index', $data);
+        $data['users'] = $model->findAll();
+        // $data['users'] = $model->getUserData()->getResult();
+        return view('pages/user/index', $data);
     }
 
     public function create()
@@ -87,28 +87,60 @@ class EmployeesController extends BaseController
     public function edit($id)
     {
         $model = new UserModel();
-        $data['employee'] = $model->getOneEmployee($id)->getFirstRow();
+        // $data['users'] = $model->withIdentities()->findById($id);
+        $data['users'] = $model->getUserData()->getFirstRow();
         // dd($data);
-        return view('pages/employees/edit', $data);
+        return view('pages/user/edit', $data);
     }
 
     public function update($id)
     {
         $rules = $this->getValidationRules();
 
-        if (!$this->validateData($this->request->getPost(), $rules)) {
+        if (!$this->validateData($this->request->getPost(), [
+            'first_name' => [
+                'label' => 'first_name',
+                'rules' =>  'required'
+            ],
+            'last_name' => [
+                'label' => 'first_name',
+                'rules' =>  'required'
+            ],
+            'email' => [
+                'label' => 'email',
+                'rules'  => 'required|valid_email|max_length[254]|is_unique[auth_identities.secret]',
+            ],
+            'password' => [
+                'label'  => 'password',
+                'rules'  => 'required|strong_password',
+                'errors' => [
+                    'max_byte' => 'Auth.errorPasswordTooLongBytes',
+                ],
+            ],
+            'password_confirm' => [
+                'label' => 'passwordConfirm',
+                'rules' => 'required|matches[password]',
+            ],
+            'group' => [
+                'label' => 'group',
+                'rules' => 'required',
+            ],
+        ])) {
             return redirect()->back()->withInput()->with('errors', $this->validator->getErrors());
         }
 
-        $data = [
-            'username' => 'darth',
-            'email'    => 'd.vader@theempire.com',
-        ];
+        // Get the User Provider (UserModel by default)
+        $users = auth()->getProvider();
 
-        $model = new UserData();
-        $employee = $model->find($id);
+        $user = $users->findById($id);
 
+        $user->fill([
+            'username' => $this->request->getPost('first_name') . '.' . $this->request->getPost('last_name'),
+            'email'    => $this->request->getPost('email'),
+            'password' => $this->request->getPost('password'),
+        ]);
 
+        $users->save($user);
 
         return redirect()->to('/user')->with('message', 'User edited successfully.');
     }
@@ -120,6 +152,7 @@ class EmployeesController extends BaseController
 
         $users->delete($id, true);
 
+        return redirect()->to('/user');
         return redirect()->to('/user')->with('message', 'User deleted.');
     }
 }

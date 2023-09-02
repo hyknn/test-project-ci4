@@ -2,9 +2,9 @@
 
 namespace App\Database\Seeds;
 
+use App\Models\UserData;
 use CodeIgniter\Database\Seeder;
 use CodeIgniter\Shield\Entities\User;
-
 
 class UserSeeder extends Seeder
 {
@@ -13,9 +13,9 @@ class UserSeeder extends Seeder
         $users = auth()->getProvider();
 
         $user = new User([
-            'username' => 'foo-bar',
-            'email'    => 'foo.bar@example.com',
-            'password' => 'secret plain text password',
+            'username' => 'ermenrich',
+            'email'    => 'admin@ermenrichstuio.com',
+            'password' => 'password',
         ]);
 
         // Save the user to the database
@@ -27,7 +27,14 @@ class UserSeeder extends Seeder
         // Retrieve the complete user object from the database
         $user = $users->findById($userId);
 
-        // Add the user to the default group
-        $users->addToDefaultGroup($user);
+        $user->addGroup('superadmin');
+        $user->activate();
+
+        $userData = new UserData();
+        $userData->save([
+            'user_id' => $userId,
+            'first_name' => 'Ermenrich',
+            'last_name' => 'Studio',
+        ]);
     }
 }
